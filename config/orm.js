@@ -1,45 +1,26 @@
-var connection = require("./connection.js");
-const cTable = require('console.table');
+// const cTable = require('console.table');
+var connection = require("../config/connection");
 
 var orm = {
-  selectAll: function (whatToSelect, tableInput) {
-    var queryString = "SELECT * FROM ??";
-    connection.query(queryString, [whatToSelect, tableInput], function (err, result) {
-      if (err) throw err;
-      console.table(result);
-    });
-  },
-  // insertOne: function (tableInput, colToSearch) {
-  //   var queryString = "INSERT INTO ?? (burgers, burger_name) VALUES ('??', false)";
-
-  //   // console.log(queryString);
-
-  //   connection.query(queryString, [tableInput, colToSearch], function (err, result) {
-  //     if (err) throw err;
-  //     // console.log(result);
-  //     console.table(result);
-  //   });
-  // },
-
-  insertOne: function (burgerName) {
-
-    var query = "INSERT INTO burgers (burger_name, devoured) VALUES (?, ?)";
-    //INSERT INTO burgers (id, burger_name, devoured) VALUES ('Hot-Mama', true);
-    connection.query(query, [burgerName, 0], function (err, result) {
-      if (err) throw err;
-      console.log("Add complete");
-      console.log(result);
-    })
-    
-  },
-  updateOne: function (burgerName, id) {
-    var query = "UPDATE burgers SET burger_name = ?, devoured = false WHERE burger_id = ?;"
-    connection.query(query, [burgerName, id], function (err, result) {
-        if (err) throw err;
-        console.log("Update complete");
-        console.log(result);
-    })
-}
+    selectAll: function (cb) {
+        connection.query("SELECT * FROM burgers ORDER BY id DESC;", function (err, result) {
+            if (err) throw err;
+            cb(result);
+        })
+    },
+    insertOne: function (name, cb) {
+        var query = "INSERT INTO burgers (burger_name) VALUES (?);"
+        connection.query(query, [name], function (err, result) {
+            if (err) throw err;
+            cb(result);
+        });
+    },
+    updateOne: function (condition, id, cb) {
+        var query = "UPDATE burgers SET devoured = ? WHERE id = ?;"
+        connection.query(query, [condition, id], function (err, result) {
+            if (err) throw err;
+            cb(result);
+        })
+    }
 };
-
 module.exports = orm;
